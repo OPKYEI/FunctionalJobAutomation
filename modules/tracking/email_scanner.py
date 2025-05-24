@@ -710,25 +710,120 @@ def scan_for_status_updates():
                         
                         # Process the match if we have company and valid status
                         if company_match and new_status and new_status != "Other" and status_confidence >= 0.6:
-                            # Find ALL applications for this company
+                            # Find ALL applications for this company (try exact match first)
                             matching_apps = applications_df[applications_df['Company'] == company_match]
+                            
+                            # If no exact match, try case-insensitive match
+                            if matching_apps.empty:
+                                print(f"   🔍 No exact match for '{company_match}', trying case-insensitive search...")
+                                matching_apps = applications_df[
+                                    applications_df['Company'].str.lower() == company_match.lower()
+                                ]
+                                if not matching_apps.empty:
+                                    print(f"   ✅ Found {len(matching_apps)} application(s) with case-insensitive match")
+                            
+                            # If still no match, try partial/fuzzy match
+                            if matching_apps.empty:
+                                print(f"   🔍 No case match for '{company_match}', trying fuzzy search...")
+                                # Try to find companies containing the main part of the name
+                                company_words = company_match.lower().split()
+                                main_word = max(company_words, key=len) if company_words else company_match.lower()
+                                
+                                matching_apps = applications_df[
+                                    applications_df['Company'].str.contains(main_word, case=False, na=False)
+                                ]
+                                if not matching_apps.empty:
+                                    # Show what was found
+                                    found_companies = matching_apps['Company'].unique()
+                                    print(f"   🔍 Found similar companies: {list(found_companies)}")
+                                    
+                                    # Try to find exact match among similar
+                                    for found_company in found_companies:
+                                        if found_company.lower().replace(' ', '') == company_match.lower().replace(' ', ''):
+                                            matching_apps = applications_df[applications_df['Company'] == found_company]
+                                            print(f"   ✅ Matched '{company_match}' to '{found_company}'")
+                                            break
                             
                             if not matching_apps.empty:
                                 print(f"   📋 Found {len(matching_apps)} application(s) for {company_match}")
                                 
-                                # Check each matching application
+                                # Handle multiple applications to same company
+                                if len(matching_apps) > 1:
+                                    print(f"   ⚠️  Multiple applications found - determining which to update...")
+                                    
+                                    # Try to match specific job based on email content
+                                    email_text = f"{subject} {content}".lower()
+                                    specific_match_idx = None
+                                    
+                                    # Look for job title mentions
+                                    for idx in matching_apps.index:
+                                        job_title = str(applications_df.at[idx, 'Title']).lower() if 'Title' in applications_df.columns else ''
+                                        job_location = str(applications_df.at[idx, 'Location']).lower() if 'Location' in applications_df.columns else ''
+                                        
+                                        # Check if job title is mentioned in email
+                                        if job_title and len(job_title) > 3:  # Avoid false matches on short titles
+                                            # Check for exact phrase or key words
+                                            if job_title in email_text or all(word in email_text for word in job_title.split()[:3]):
+                                                specific_match_idx = idx
+                                                print(f"   ✅ Matched specific job by title: '{applications_df.at[idx, 'Title']}'")
+                                                break
+                                        
+                                        # Check if location is specifically mentioned
+                                        if job_location and len(job_location) > 3:
+                                            if job_location in email_text:
+                                                specific_match_idx = idx
+                                                print(f"   ✅ Matched specific job by location: '{applications_df.at[idx, 'Location']}'")
+                                                break
+                                    
+                                    # If we found a specific match, update only that one
+                                    if specific_match_idx is not None:
+                                        matching_apps = applications_df.loc[[specific_match_idx]]
+                                        print(f"   ➡️  Updating only the matched position")
+                                    else:
+                                        # No specific match - use conservative approach
+                                        print(f"   ⚠️  Cannot determine specific position from email")
+                                        
+                                        # Check if this seems like a company-wide rejection
+                                        bulk_rejection_phrases = [
+                                            'all positions', 'any of our openings', 'all current openings',
+                                            'future opportunities', 'all applications'
+                                        ]
+                                        is_bulk_rejection = any(phrase in email_text for phrase in bulk_rejection_phrases)
+                                        
+                                        if is_bulk_rejection:
+                                            print(f"   📢 Detected company-wide rejection - will update all applications")
+                                        else:
+                                            # Conservative: update only the most recent application
+                                            print(f"   🎯 Using conservative approach - updating most recent application only")
+                                            
+                                            # Find most recent application
+                                            dates = pd.to_datetime(matching_apps['Date Applied'], errors='coerce')
+                                            if not dates.isna().all():
+                                                most_recent_idx = dates.idxmax()
+                                                matching_apps = applications_df.loc[[most_recent_idx]]
+                                                recent_job = applications_df.at[most_recent_idx, 'Title']
+                                                recent_date = applications_df.at[most_recent_idx, 'Date Applied']
+                                                print(f"   📅 Selected: '{recent_job}' (applied: {recent_date})")
+                                            else:
+                                                # If no valid dates, just take the first one
+                                                matching_apps = applications_df.loc[[matching_apps.index[0]]]
+                                                print(f"   📌 Selected first application (no valid dates found)")
+                                
+                                # Now process the selected applications
                                 updated_any = False
                                 for app_idx in matching_apps.index:
                                     current_status = applications_df.at[app_idx, 'Status']
                                     job_title = applications_df.at[app_idx, 'Title'] if 'Title' in applications_df.columns else 'Unknown'
+                                    job_location = applications_df.at[app_idx, 'Location'] if 'Location' in applications_df.columns else 'Unknown'
                                     job_id = applications_df.at[app_idx, 'Job ID'] if 'Job ID' in applications_df.columns else app_idx
                                     
-                                    print(f"      - Job: {job_title} | Current status: {current_status}")
+                                    print(f"      - Job: {job_title} ({job_location}) | Current status: {current_status}")
                                     
                                     # Only update if status actually changed
                                     if new_status != current_status:
                                         # Update the status
                                         applications_df.at[app_idx, 'Status'] = new_status
+                                        print(f"      🔍 Debug: DataFrame updated - new status is '{applications_df.at[app_idx, 'Status']}'")
                                         
                                         # Add notes about the update
                                         notes_col = 'Notes'
@@ -737,7 +832,13 @@ def scan_for_status_updates():
                                             
                                         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M')
                                         email_snippet = subject[:50] + ('...' if len(subject) > 50 else '')
-                                        new_note = f"[{timestamp}] AI updated: '{current_status}' → '{new_status}' | Email: \"{email_snippet}\" | Confidence: {status_confidence:.2f}"
+                                        
+                                        # Add note about multiple applications if relevant
+                                        multi_app_note = ""
+                                        if len(matching_apps.index) < len(applications_df[applications_df['Company'] == company_match]):
+                                            multi_app_note = f" | Note: {len(applications_df[applications_df['Company'] == company_match])} total applications to this company, updated only this one"
+                                        
+                                        new_note = f"[{timestamp}] AI updated: '{current_status}' → '{new_status}' | Email: \"{email_snippet}\" | Confidence: {status_confidence:.2f}{multi_app_note}"
                                         
                                         current_notes = applications_df.at[app_idx, notes_col]
                                         if pd.isna(current_notes) or current_notes == '':
@@ -756,9 +857,15 @@ def scan_for_status_updates():
                                         print(f"      ℹ️  No change needed (already '{current_status}')")
                                 
                                 if not updated_any:
-                                    print(f"   ℹ️  All applications already have status '{new_status}'")
+                                    print(f"   ℹ️  All selected applications already have status '{new_status}'")
                             else:
                                 print(f"   ❌ No applications found for company '{company_match}'")
+                                # Show some similar companies to help debug
+                                similar = applications_df[
+                                    applications_df['Company'].str.contains(company_match.split()[0], case=False, na=False)
+                                ]['Company'].unique()[:5]
+                                if len(similar) > 0:
+                                    print(f"   💡 Similar companies in your applications: {list(similar)}")
                         else:
                             # Explain why no update
                             reasons = []
@@ -811,9 +918,14 @@ def scan_for_status_updates():
                 
                 # Save the updated dataframe after each account
                 if account_updates > 0:
+                    print(f"   💾 Saving {account_updates} updates to: {APPLIED_JOBS_CSV}")
                     applications_df.to_csv(APPLIED_JOBS_CSV, index=False)
                     print(f"   ✅ Saved {account_updates} updates to CSV")
                     total_updates += account_updates
+                    test_df = pd.read_csv(APPLIED_JOBS_CSV)
+                    marcom_check = test_df[test_df['Company'].str.contains('MarCom', case=False, na=False)]
+                    if not marcom_check.empty:
+                        print(f"   🔍 Verified: MarCom Group status is now '{marcom_check.iloc[0]['Status']}'")
                 
                 results[username] = {
                     "status": "success", 
