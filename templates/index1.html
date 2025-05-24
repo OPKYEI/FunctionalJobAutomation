@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Applied Jobs</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        table { 
+            border-collapse: collapse; 
+            width: 100%;
+            margin-top: 20px;
+        }
+        th, td { 
+            border: 1px solid #ddd; 
+            padding: 12px; 
+            text-align: left; 
+        }
+        th { 
+            background-color: #f4f4f4; 
+            font-weight: bold;
+            cursor: pointer;
+        }
+        th:hover {
+            background-color: #e0e0e0;
+        }
+        tr:nth-child(even) { background-color: #f8f8f8; }
+        a { 
+            color: #0066cc;
+            text-decoration: none;
+        }
+        a:hover { text-decoration: underline; }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .sl-column {
+            width: 50px;
+            text-align: center;
+        }
+        .sort-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0 5px;
+            font-size: 12px;
+        }
+        .sort-button:hover {
+            color: #0066cc;
+        }
+        .applied-column {
+            width: 70px;
+            text-align: center;
+        }
+        .status-column {
+            width: 120px;
+            text-align: center;
+        }
+        .tick {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        
+        /* Status badges */
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-right: 5px;
+            text-align: center;
+            min-width: 80px;
+        }
+        
+        .status-applied {
+            background-color: #cfe2ff;
+            color: #084298;
+        }
+        
+        .status-assessment {
+            background-color: #e2e3e5;
+            color: #41464b;
+        }
+        
+        .status-followup {
+            background-color: #d1e7dd;
+            color: #0f5132;
+        }
+        
+        .status-interview {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-interviewed {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        
+        .status-rejected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status-offered {
+            background-color: #d1e7dd;
+            color: #0f5132;
+        }
+        
+        .status-accepted {
+            background-color: #198754;
+            color: #fff;
+        }
+        
+        .status-declined {
+            background-color: #6c757d;
+            color: #fff;
+        }
+        
+        /* Edit button */
+        .edit-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            vertical-align: middle;
+        }
+        
+        /* Modal styles */
+        .status-modal {
+            display: block;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 50%;
+            border-radius: 5px;
+            position: relative;
+        }
+        
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close:hover {
+            color: black;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .form-group select, .form-group textarea, .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .form-actions {
+            text-align: right;
+        }
+        
+        .form-actions button {
+            padding: 6px 12px;
+            margin-left: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .cancel-btn {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .save-btn {
+            background-color: #0066cc;
+            color: white;
+        }
+        
+        /* Filter controls */
+        .controls {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .filters {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .filter-button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #f4f4f4;
+        }
+        
+        .filter-button.active {
+            background-color: #0066cc;
+            color: white;
+        }
+        
+        .stats {
+            font-size: 14px;
+            background-color: #f8f8f8;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        
+        .stat-badge {
+            display: inline-block;
+            padding: 3px 6px;
+            border-radius: 10px;
+            margin: 0 3px;
+            font-weight: bold;
+        }
+
+        .search-box {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 200px;
+        }
+        
+        /* Tooltip styles */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Applied Jobs History</h1>
+        
+        <!-- Controls section -->
+        <div class="controls">
+            <div class="filters">
+                <button class="filter-button active" data-status="all">All</button>
+                <button class="filter-button" data-status="Applied">Applied</button>
+                <button class="filter-button" data-status="Assessment">Assessment</button>
+                <button class="filter-button" data-status="Follow-up Required">Follow-up</button>
+                <button class="filter-button" data-status="Interview Scheduled">Interview</button>
+                <button class="filter-button" data-status="Interviewed">Interviewed</button>
+                <button class="filter-button" data-status="Rejected">Rejected</button>
+                <button class="filter-button" data-status="Offered">Offered</button>
+                <input type="text" class="search-box" placeholder="Search..." id="searchInput">
+            </div>
+            <div class="stats" id="statsContainer">
+                Loading statistics...
+            </div>
+        </div>
+        
+        <!-- Table -->
+        <table id="jobsTable">
+            <thead>
+                <tr>
+                    <th class="sl-column">Sl No</th>
+                    <th data-sort="title">Job Title <button class="sort-button" data-sort="title">↕️</button></th>
+                    <th data-sort="company">Company <button class="sort-button" data-sort="company">↕️</button></th>  
+                    <th data-sort="location">Location <button class="sort-button" data-sort="location">↕️</button></th>
+                    <th>HR Contact</th>
+                    <th data-sort="external">
+                        External Link
+                        <button class="sort-button" data-sort="external">↕️</button>
+                    </th> 
+                    <th class="applied-column" data-sort="date">
+                        Date Applied
+                        <button class="sort-button" data-sort="date">↕️</button>
+                    </th>
+                    <th class="status-column" data-sort="status">
+                        Status
+                        <button class="sort-button" data-sort="status">↕️</button>
+                    </th>
+                    <th>Interview</th>
+                </tr>
+            </thead>
+            <tbody id="jobsBody"></tbody>
+        </table>
+    </div>
+
+    <script>
+        let sortOrder = { field: null, direction: 'asc' };
+        let jobsData = [];
+        let currentFilter = 'all';
+
+        // Helper function to format date for display
+        function formatDateForDisplay(dateString) {
+            if (!dateString) return 'Not set';
+            
+            try {
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) return dateString;
+                
+                const options = { year: 'numeric', month: 'short', day: 'numeric' };
+                return date.toLocaleDateString(undefined, options);
+            } catch (e) {
+                console.error('Error formatting date for display:', e);
+                return dateString;
+            }
+        }
+
+        // Helper function to get status badge class
+        function getStatusClass(status) {
+            status = status.toLowerCase();
+            let className = 'status-badge ';
+            
+            if (status === 'applied') {
+                className += 'status-applied';
+            } else if (status === 'assessment') {
+                className += 'status-assessment';
+            } else if (status.includes('follow-up')) {
+                className += 'status-followup';
+            } else if (status === 'interview scheduled') {
+                className += 'status-interview';
+            } else if (status === 'interviewed') {
+                className += 'status-interviewed';
+            } else if (status === 'rejected') {
+                className += 'status-rejected';
+            } else if (status === 'offered') {
+                className += 'status-offered';
+            } else if (status === 'accepted') {
+                className += 'status-accepted';
+            } else if (status === 'declined') {
+                className += 'status-declined';
+            } else {
+                className += 'status-applied';
+            }
+            
+            return className;
+        }
+
+        // Helper function to format date for input fields
+        function formatDateForInput(dateString) {
+            if (!dateString) return '';
+            
+            try {
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) return '';
+                
+                // Format as YYYY-MM-DDTHH:MM (format required by datetime-local input)
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const hours = String(date.getHours()).padStart(2, '0');
+                const minutes = String(date.getMinutes()).padStart(2, '0');
+                
+                return `${year}-${month}-${day}T${hours}:${minutes}`;
+            } catch (e) {
+                console.error('Error formatting date:', e);
+                return '';
+            }
+        }
+
+        // Helper function to format date for API
+        function formatDateForAPI(dateString) {
+            if (!dateString) return '';
+            
+            try {
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) return '';
+                
+                // Format as YYYY-MM-DD HH:MM:SS
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const hours = String(date.getHours()).padStart(2, '0');
+                const minutes = String(date.getMinutes()).padStart(2, '0');
+                const seconds = String(date.getSeconds()).padStart(2, '0');
+                
+                return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+            } catch (e) {
+                console.error('Error formatting date for API:', e);
+                return '';
+            }
+        }
+
+        function createTableRow(job, index) {
+            const row = document.createElement('tr');
+            // Add data-job-id attribute for easy row identification
+            row.setAttribute('data-job-id', job.Job_ID);
+            
+            // Serial Number
+            const slCell = document.createElement('td');
+            slCell.textContent = index + 1;
+            slCell.className = 'sl-column';
+            row.appendChild(slCell);
+            
+            // Job Title with link
+            const titleCell = document.createElement('td');
+            if (job.Job_Link) {
+                const titleLink = document.createElement('a');
+                titleLink.href = job.Job_Link;
+                titleLink.textContent = job.Title || 'No Title';
+                titleLink.target = '_blank';
+                titleCell.appendChild(titleLink);
+            } else {
+                titleCell.textContent = job.Title || 'No Title';
+            }
+            row.appendChild(titleCell);
+            
+            // Company
+            const companyCell = document.createElement('td');
+            companyCell.textContent = job.Company || 'Not specified';
+            row.appendChild(companyCell);
+            
+            // Location
+            const locationCell = document.createElement('td');
+            locationCell.textContent = job.Work_Location || 'Not specified';
+            row.appendChild(locationCell);
+            
+            // HR Name with link
+            const hrCell = document.createElement('td');
+            if (job.HR_Name && job.HR_Name !== 'Unknown' && job.HR_Link) {
+                const hrLink = document.createElement('a');
+                hrLink.href = job.HR_Link;
+                hrLink.textContent = job.HR_Name;
+                hrLink.target = '_blank';
+                hrCell.appendChild(hrLink);
+            } else {
+                hrCell.textContent = job.HR_Name || 'N/A';
+            }
+            row.appendChild(hrCell);
+            
+            // External Job Link
+            const extCell = document.createElement('td');
+            if (job.External_Job_link === 'Easy Applied') {
+                extCell.textContent = 'Easy Applied';
+            } else if (job.External_Job_link) {
+                const extLink = document.createElement('a');
+                extLink.href = job.External_Job_link;
+                extLink.textContent = 'External Link';
+                extLink.target = '_blank';
+                extCell.appendChild(extLink);
+            } else {
+                extCell.textContent = 'N/A';
+            }
+            row.appendChild(extCell);
+            
+            // Applied column
+            const appliedCell = document.createElement('td');
+			appliedCell.className = 'applied-column';
+
+			if (job.Date_Applied && job.Date_Applied !== 'Pending') {
+				const formattedDate = formatDateForDisplay(job.Date_Applied);
+				
+				// Create wrapper for date and edit button
+				const dateWrapper = document.createElement('div');
+				dateWrapper.style.display = 'flex';
+				dateWrapper.style.alignItems = 'center';
+				dateWrapper.style.justifyContent = 'center';
+				
+				// Show tick and formatted date
+				const dateText = document.createElement('span');
+				dateText.style.marginRight = '5px';
+				dateText.title = `Applied on: ${formattedDate}`;
+				dateText.textContent = formattedDate;
+				dateWrapper.appendChild(dateText);
+				
+				// Add edit button for date
+				const editDateBtn = document.createElement('button');
+				editDateBtn.innerHTML = '✏️';
+				editDateBtn.className = 'edit-button';
+				editDateBtn.title = 'Edit Applied Date';
+				editDateBtn.addEventListener('click', (e) => {
+					e.preventDefault();
+					e.stopPropagation();
+					openJobModal(job.Job_ID, job.Status || 'Applied', 'date');
+				});
+				dateWrapper.appendChild(editDateBtn);
+				
+				appliedCell.appendChild(dateWrapper);
+			} else {
+				// Create badge for 'Applied' status
+				const appliedBadge = document.createElement('div');
+				appliedBadge.className = 'status-badge status-applied';
+				appliedBadge.style.display = 'inline-block';
+				appliedBadge.style.marginRight = '5px';
+				appliedBadge.textContent = 'Applied';
+				
+				// Add button to set date if not yet applied
+				const applyBtn = document.createElement('button');
+				applyBtn.innerHTML = '📅';
+				applyBtn.className = 'edit-button';
+				applyBtn.title = 'Set Applied Date';
+				applyBtn.addEventListener('click', () => {
+					openJobModal(job.Job_ID, job.Status || 'Applied', 'date');
+				});
+				
+				// Create wrapper
+				const wrapper = document.createElement('div');
+				wrapper.style.display = 'flex';
+				wrapper.style.alignItems = 'center';
+				wrapper.style.justifyContent = 'center';
+				wrapper.appendChild(appliedBadge);
+				wrapper.appendChild(applyBtn);
+				
+				appliedCell.appendChild(wrapper);
+			}
+
+			row.appendChild(appliedCell);
+            
+            // Status column
+            const statusCell = document.createElement('td');
+            statusCell.className = 'status-column';
+            
+            // Create a status badge
+            const statusBadge = document.createElement('span');
+            const status = job.Status || 'Applied';
+            statusBadge.textContent = status;
+            statusBadge.className = getStatusClass(status);
+            statusCell.appendChild(statusBadge);
+            
+            // Add edit button
+            const editButton = document.createElement('button');
+            editButton.innerHTML = '✏️';
+            editButton.className = 'edit-button';
+            editButton.title = 'Edit Status';
+            editButton.addEventListener('click', () => {
+                openJobModal(job.Job_ID, status, 'status');
+            });
+            statusCell.appendChild(editButton);
+            
+            row.appendChild(statusCell);
+            
+            // Interview Date column
+            const interviewCell = document.createElement('td');
+            if (job.Interview_Date) {
+                const formattedInterviewDate = formatDateForDisplay(job.Interview_Date);
+                interviewCell.textContent = formattedInterviewDate;
+                
+                // Add edit button
+                const editInterviewBtn = document.createElement('button');
+                editInterviewBtn.innerHTML = '✏️';
+                editInterviewBtn.className = 'edit-button';
+                editInterviewBtn.title = 'Edit Interview Date';
+                editInterviewBtn.style.marginLeft = '5px';
+                editInterviewBtn.addEventListener('click', () => {
+                    openJobModal(job.Job_ID, job.Status || 'Applied', 'interview');
+                });
+                interviewCell.appendChild(editInterviewBtn);
+            } else if (status === 'Interview Scheduled') {
+                const addInterviewBtn = document.createElement('button');
+                addInterviewBtn.innerHTML = '📅';
+                addInterviewBtn.className = 'edit-button';
+                addInterviewBtn.title = 'Set Interview Date';
+                addInterviewBtn.addEventListener('click', () => {
+                    openJobModal(job.Job_ID, status, 'interview');
+                });
+                interviewCell.appendChild(addInterviewBtn);
+            } else {
+                interviewCell.textContent = '—';
+            }
+            row.appendChild(interviewCell);
+            
+            // Add data-status attribute for filtering
+            row.setAttribute('data-status', status);
+            
+            // If this job has notes, add them as a data attribute for potential display
+            if (job.Notes) {
+                row.setAttribute('data-notes', job.Notes);
+            }
+            
+            return row;
+        }        
+
+        // Function to open job update modal (status, date applied, interview date)
+        function openJobModal(jobId, currentStatus, activeTab = 'status') {
+            // Find the job data
+            const job = jobsData.find(j => j.Job_ID === jobId);
+            if (!job) {
+                alert('Job data not found');
+                return;
+            }
+            
+            // Create modal element
+            const modal = document.createElement('div');
+            modal.className = 'status-modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <h2>Update Job Application</h2>
+                    <h3>${job.Title} - ${job.Company}</h3>
+                    
+                    <div style="display: flex; margin-bottom: 20px; border-bottom: 1px solid #ddd;">
+                        <button id="status-tab" style="padding: 10px; border: none; background: none; cursor: pointer; ${activeTab === 'status' ? 'font-weight: bold; border-bottom: 2px solid #0066cc;' : ''}">Status</button>
+                        <button id="date-tab" style="padding: 10px; border: none; background: none; cursor: pointer; ${activeTab === 'date' ? 'font-weight: bold; border-bottom: 2px solid #0066cc;' : ''}">Date Applied</button>
+                        <button id="interview-tab" style="padding: 10px; border: none; background: none; cursor: pointer; ${activeTab === 'interview' ? 'font-weight: bold; border-bottom: 2px solid #0066cc;' : ''}">Interview Date</button>
+                    </div>
+                    
+                    <div id="status-content" style="display: ${activeTab === 'status' ? 'block' : 'none'};">
+                        <div class="form-group">
+                            <label for="status-select">Status:</label>
+                            <select id="status-select">
+                                <option value="Applied" ${currentStatus === 'Applied' ? 'selected' : ''}>Applied</option>
+                                <option value="Assessment" ${currentStatus === 'Assessment' ? 'selected' : ''}>Assessment</option>
+                                <option value="Follow-up Required" ${currentStatus === 'Follow-up Required' ? 'selected' : ''}>Follow-up Required</option>
+                                <option value="Interview Scheduled" ${currentStatus === 'Interview Scheduled' ? 'selected' : ''}>Interview Scheduled</option>
+                                <option value="Interviewed" ${currentStatus === 'Interviewed' ? 'selected' : ''}>Interviewed</option>
+                                <option value="Rejected" ${currentStatus === 'Rejected' ? 'selected' : ''}>Rejected</option>
+                                <option value="Offered" ${currentStatus === 'Offered' ? 'selected' : ''}>Offered</option>
+                                <option value="Accepted" ${currentStatus === 'Accepted' ? 'selected' : ''}>Accepted</option>
+                                <option value="Declined" ${currentStatus === 'Declined' ? 'selected' : ''}>Declined</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="status-notes">Notes:</label>
+                            <textarea id="status-notes" rows="3"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" id="status-cancel-btn" class="cancel-btn">Cancel</button>
+                            <button type="button" id="status-save-btn" class="save-btn">Save</button>
+                        </div>
+                    </div>
+                    
+                    <div id="date-content" style="display: ${activeTab === 'date' ? 'block' : 'none'};">
+                        <div class="form-group">
+                            <label for="date-applied">Date Applied:</label>
+                            <input type="datetime-local" id="date-applied" value="${formatDateForInput(job.Date_Applied)}">
+                        </div>
+                        <div class="form-group">
+                            <label for="date-notes">Notes:</label>
+                            <textarea id="date-notes" rows="3"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" id="date-cancel-btn" class="cancel-btn">Cancel</button>
+                            <button type="button" id="date-save-btn" class="save-btn">Save</button>
+                        </div>
+                    </div>
+                    
+                    <div id="interview-content" style="display: ${activeTab === 'interview' ? 'block' : 'none'};">
+                        <div class="form-group">
+                            <label for="interview-date">Interview Date:</label>
+                            <input type="datetime-local" id="interview-date" value="${formatDateForInput(job.Interview_Date)}">
+                        </div>
+                        <div class="form-group">
+                            <label for="interview-notes">Notes:</label>
+                            <textarea id="interview-notes" rows="3"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" id="interview-cancel-btn" class="cancel-btn">Cancel</button>
+                            <button type="button" id="interview-save-btn" class="save-btn">Save</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Tab switching
+            const statusTab = modal.querySelector('#status-tab');
+            const dateTab = modal.querySelector('#date-tab');
+            const interviewTab = modal.querySelector('#interview-tab');
+            
+            const statusContent = modal.querySelector('#status-content');
+            const dateContent = modal.querySelector('#date-content');
+            const interviewContent = modal.querySelector('#interview-content');
+            
+            statusTab.addEventListener('click', () => {
+                statusContent.style.display = 'block';
+                dateContent.style.display = 'none';
+                interviewContent.style.display = 'none';
+                
+                statusTab.style.fontWeight = 'bold';
+                statusTab.style.borderBottom = '2px solid #0066cc';
+                dateTab.style.fontWeight = 'normal';
+                dateTab.style.borderBottom = 'none';
+                interviewTab.style.fontWeight = 'normal';
+                interviewTab.style.borderBottom = 'none';
+            });
+            
+            dateTab.addEventListener('click', () => {
+                statusContent.style.display = 'none';
+                dateContent.style.display = 'block';
+                interviewContent.style.display = 'none';
+                
+                statusTab.style.fontWeight = 'normal';
+                statusTab.style.borderBottom = 'none';
+                dateTab.style.fontWeight = 'bold';
+                dateTab.style.borderBottom = '2px solid #0066cc';
+                interviewTab.style.fontWeight = 'normal';
+                interviewTab.style.borderBottom = 'none';
+            });
+            
+            interviewTab.addEventListener('click', () => {
+                statusContent.style.display = 'none';
+                dateContent.style.display = 'none';
+                interviewContent.style.display = 'block';
+                
+                statusTab.style.fontWeight = 'normal';
+                statusTab.style.borderBottom = 'none';
+                dateTab.style.fontWeight = 'normal';
+                dateTab.style.borderBottom = 'none';
+                interviewTab.style.fontWeight = 'bold';
+                interviewTab.style.borderBottom = '2px solid #0066cc';
+            });
+            
+            // Close button event
+            const closeBtn = modal.querySelector('.close');
+            closeBtn.addEventListener('click', () => {
+                document.body.removeChild(modal);
+            });
+            
+            // Cancel buttons
+            modal.querySelectorAll('.cancel-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.body.removeChild(modal);
+                });
+            });
+            
+            // Status Save button
+            const statusSaveBtn = modal.querySelector('#status-save-btn');
+            statusSaveBtn.addEventListener('click', async () => {
+                const newStatus = modal.querySelector('#status-select').value;
+                const notes = modal.querySelector('#status-notes').value;
+                
+                try {
+                    const response = await fetch(`/applied-jobs/${jobId}/status`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            status: newStatus,
+                            notes: notes
+                        })
+                    });
+                    
+                    const responseData = await response.json();
+                    
+                    if (response.ok) {
+                        // If changing to Interview Scheduled, prompt to add interview date
+                        if (newStatus === 'Interview Scheduled' && currentStatus !== 'Interview Scheduled') {
+                            alert('Status updated successfully! You may also want to add an interview date.');
+                            // Show and select the interview tab
+                            interviewTab.click();
+                            return;
+                        }
+                        
+                        // Update the job data in our local array without refreshing the page
+                        const jobIndex = jobsData.findIndex(j => j.Job_ID === jobId);
+                        if (jobIndex >= 0) {
+                            jobsData[jobIndex].Status = newStatus;
+                            
+                            // Find the current row and replace it with an updated row
+                            const currentRow = document.querySelector(`tr[data-job-id="${jobId}"]`);
+                            if (currentRow) {
+                                const tableRowIndex = Array.from(currentRow.parentNode.children).indexOf(currentRow);
+                                const newRow = createTableRow(jobsData[jobIndex], tableRowIndex);
+                                currentRow.parentNode.replaceChild(newRow, currentRow);
+                                
+                                // Reapply current filter
+                                filterTable(currentFilter);
+                                
+                                // Update statistics
+                                updateStatistics();
+                            }
+                            
+                            // Close the modal
+                            // Close the modal
+                            document.body.removeChild(modal);
+                            
+                            // Show a success message
+                            showNotification('Status updated successfully!', 'success');
+                        }
+                    } else {
+                        showNotification(`Failed to update status: ${responseData.error || 'Unknown error'}`, 'error');
+                    }
+                } catch (error) {
+                    console.error('Error updating status:', error);
+                    showNotification('An error occurred while updating the status.', 'error');
+                }
+            });
+            
+            // Date Applied Save button
+            const dateSaveBtn = modal.querySelector('#date-save-btn');
+            
+            // Modify the dateSaveBtn event listener
+				dateSaveBtn.addEventListener('click', async () => {
+					const dateApplied = modal.querySelector('#date-applied').value;
+					const notes = modal.querySelector('#date-notes').value;
+					
+					if (!dateApplied) {
+						showNotification('Please select a date', 'warning');
+						return;
+					}
+					
+					try {
+						// Format the date for the API
+						const formattedDate = formatDateForAPI(dateApplied);
+						
+						// Use the endpoint pattern
+						const response = await fetch(`/applied-jobs/${jobId}/date-applied`, {
+							method: 'PUT',
+							headers: {
+								'Content-Type': 'application/json'
+							},
+							body: JSON.stringify({
+								date_applied: formattedDate,
+								notes: notes
+							})
+						});
+						
+						const responseData = await response.json();
+						
+						if (response.ok) {
+							// Close the modal
+							document.body.removeChild(modal);
+							
+							// Update the job data in our local array without refreshing the page
+							const jobIndex = jobsData.findIndex(j => j.Job_ID === jobId);
+							if (jobIndex >= 0) {
+								// Important: Store the date as it came from the API, not the input format
+								jobsData[jobIndex].Date_Applied = formattedDate;
+								
+								// Find the current row and replace it with an updated row
+								const currentRow = document.querySelector(`tr[data-job-id="${jobId}"]`);
+								if (currentRow) {
+									const tableRowIndex = Array.from(currentRow.parentNode.children).indexOf(currentRow);
+									const newRow = createTableRow(jobsData[jobIndex], tableRowIndex);
+									currentRow.parentNode.replaceChild(newRow, currentRow);
+								}
+								
+								// Show a success message
+								showNotification('Date applied updated successfully!', 'success');
+								
+								// Debug - log the updated date
+								console.log('Updated date:', jobsData[jobIndex].Date_Applied);
+							}
+						} else {
+							showNotification(`Failed to update date applied: ${responseData.error || 'Unknown error'}`, 'error');
+						}
+					} catch (error) {
+						console.error('Error updating date applied:', error);
+						showNotification('An error occurred while updating the date applied.', 'error');
+					}
+				});
+            
+            // Interview Date Save button
+            const interviewSaveBtn = modal.querySelector('#interview-save-btn');
+            interviewSaveBtn.addEventListener('click', async () => {
+                const interviewDate = modal.querySelector('#interview-date').value;
+                const notes = modal.querySelector('#interview-notes').value;
+                
+                if (!interviewDate) {
+                    showNotification('Please select an interview date', 'warning');
+                    return;
+                }
+                
+                try {
+                    // Format the date for the API
+                    const formattedDate = formatDateForAPI(interviewDate);
+                    
+                    const response = await fetch(`/applied-jobs/${jobId}/interview-date`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            interview_date: formattedDate,
+                            notes: notes
+                        })
+                    });
+                    
+                    const responseData = await response.json();
+                    
+                    if (response.ok) {
+                        // Close the modal
+                        document.body.removeChild(modal);
+                        
+                        // Update the job data in our local array
+                        const jobIndex = jobsData.findIndex(j => j.Job_ID === jobId);
+                        if (jobIndex >= 0) {
+                            jobsData[jobIndex].Interview_Date = interviewDate;
+                            // Update status if mentioned in the response
+                            if (responseData.message && responseData.message.includes("Status automatically updated")) {
+                                jobsData[jobIndex].Status = "Interview Scheduled";
+                            }
+                            
+                            // Find the current row and replace it with an updated row
+                            const currentRow = document.querySelector(`tr[data-job-id="${jobId}"]`);
+                            if (currentRow) {
+                                const tableRowIndex = Array.from(currentRow.parentNode.children).indexOf(currentRow);
+                                const newRow = createTableRow(jobsData[jobIndex], tableRowIndex);
+                                currentRow.parentNode.replaceChild(newRow, currentRow);
+                                
+                                // Reapply current filter
+                                filterTable(currentFilter);
+                                
+                                // Update statistics
+                                updateStatistics();
+                            }
+                            
+                            // Show a success message
+                            showNotification('Interview date updated successfully!', 'success');
+                        }
+                    } else {
+                        showNotification(`Failed to update interview date: ${responseData.error || 'Unknown error'}`, 'error');
+                    }
+                } catch (error) {
+                    console.error('Error updating interview date:', error);
+                    showNotification('An error occurred while updating the interview date.', 'error');
+                }
+            });
+            
+            // Close modal when clicking outside
+            window.onclick = function(event) {
+                if (event.target === modal) {
+                    document.body.removeChild(modal);
+                }
+            };
+        }
+
+        // Function to show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.textContent = message;
+            notification.style.position = 'fixed';
+            notification.style.top = '20px';
+            notification.style.left = '50%';
+            notification.style.transform = 'translateX(-50%)';
+            notification.style.padding = '10px 20px';
+            notification.style.borderRadius = '4px';
+            notification.style.zIndex = '2000';
+            notification.style.opacity = '0';
+            notification.style.transition = 'opacity 0.3s';
+            
+            // Set colors based on notification type
+            if (type === 'success') {
+                notification.style.backgroundColor = '#4CAF50';
+                notification.style.color = 'white';
+            } else if (type === 'error') {
+                notification.style.backgroundColor = '#f44336';
+                notification.style.color = 'white';
+            } else if (type === 'warning') {
+                notification.style.backgroundColor = '#ff9800';
+                notification.style.color = 'white';
+            } else {
+                notification.style.backgroundColor = '#2196F3';
+                notification.style.color = 'white';
+            }
+            
+            document.body.appendChild(notification);
+            
+            // Fade in
+            setTimeout(() => {
+                notification.style.opacity = '1';
+            }, 10);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    if (document.body.contains(notification)) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Function to sort the table
+        function sortTable(field) {
+            // Toggle direction if same field, otherwise set to ascending
+            if (sortOrder.field === field) {
+                sortOrder.direction = sortOrder.direction === 'asc' ? 'desc' : 'asc';
+            } else {
+                sortOrder.field = field;
+                sortOrder.direction = 'asc';
+            }
+            
+            jobsData.sort((a, b) => {
+                let valueA, valueB;
+                
+                switch (field) {
+                    case 'title':
+                        valueA = a.Title || '';
+                        valueB = b.Title || '';
+                        break;
+                    case 'company':
+                        valueA = a.Company || '';
+                        valueB = b.Company || '';
+                        break;
+                    case 'location':
+                        valueA = a.Work_Location || '';
+                        valueB = b.Work_Location || '';
+                        break;
+                    case 'external':
+                        valueA = a.External_Job_link || '';
+                        valueB = b.External_Job_link || '';
+                        break;
+                    case 'date':
+                        // For dates, we want to sort by the actual date value
+                        valueA = a.Date_Applied ? new Date(a.Date_Applied).getTime() : 0;
+                        valueB = b.Date_Applied ? new Date(b.Date_Applied).getTime() : 0;
+                        return sortOrder.direction === 'asc' ? valueA - valueB : valueB - valueA;
+                    case 'status':
+                        valueA = a.Status || 'Applied';
+                        valueB = b.Status || 'Applied';
+                        break;
+                    default:
+                        return 0;
+                }
+                
+                // For string values
+                if (typeof valueA === 'string') {
+                    if (sortOrder.direction === 'asc') {
+                        return valueA.localeCompare(valueB);
+                    } else {
+                        return valueB.localeCompare(valueA);
+                    }
+                }
+                
+                return 0;
+            });
+            
+            refreshTable();
+        }
+
+        // Function to filter table by status
+        function filterTable(status) {
+            currentFilter = status;
+            const rows = document.querySelectorAll('#jobsBody tr');
+            
+            rows.forEach(row => {
+                const rowStatus = row.getAttribute('data-status');
+                if (status === 'all' || rowStatus === status) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            // Update active filter button
+            document.querySelectorAll('.filter-button').forEach(btn => {
+                if (btn.getAttribute('data-status') === status) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        // Function to search table
+        function searchTable(query) {
+            query = query.toLowerCase();
+            const rows = document.querySelectorAll('#jobsBody tr');
+            
+            rows.forEach(row => {
+                // Search through all cell content
+                const rowText = Array.from(row.children)
+                    .map(cell => cell.textContent.toLowerCase())
+                    .join(' ');
+                
+                if (rowText.includes(query)) {
+                    // Show the row only if it also passes the status filter
+                    if (currentFilter === 'all' || row.getAttribute('data-status') === currentFilter) {
+                        row.style.display = '';
+                    }
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        // Function to calculate and display statistics
+        function updateStatistics() {
+            const stats = {};
+            let total = 0;
+            
+            jobsData.forEach(job => {
+                const status = job.Status || 'Applied';
+                stats[status] = (stats[status] || 0) + 1;
+                total++;
+            });
+            
+            // Build the stats HTML
+            let statsHtml = `<strong>Total:</strong> ${total} | `;
+            
+            // Sort statuses in a logical order
+            const statusOrder = [
+                'Applied', 
+                'Assessment', 
+                'Follow-up Required', 
+                'Interview Scheduled', 
+                'Interviewed', 
+                'Rejected', 
+                'Offered', 
+                'Accepted', 
+                'Declined'
+            ];
+            
+            // Add stats in order
+            statusOrder.forEach(status => {
+                if (stats[status]) {
+                    const count = stats[status];
+                    const percent = Math.round((count / total) * 100);
+                    const badgeClass = getStatusClass(status).replace('status-badge', 'stat-badge');
+                    
+                    statsHtml += `<span class="${badgeClass}">${status}: ${count} (${percent}%)</span> `;
+                }
+            });
+            
+            // Add any remaining status not in our predefined order
+            for (const status in stats) {
+                if (!statusOrder.includes(status)) {
+                    const count = stats[status];
+                    const percent = Math.round((count / total) * 100);
+                    const badgeClass = getStatusClass(status).replace('status-badge', 'stat-badge');
+                    
+                    statsHtml += `<span class="${badgeClass}">${status}: ${count} (${percent}%)</span> `;
+                }
+            }
+            
+            document.getElementById('statsContainer').innerHTML = statsHtml;
+        }
+
+        // Function to refresh the table based on current data and filters
+        function refreshTable() {
+            const tbody = document.getElementById('jobsBody');
+            tbody.innerHTML = '';
+            
+            jobsData.forEach((job, index) => {
+                const row = createTableRow(job, index);
+                tbody.appendChild(row);
+            });
+            
+            // Reapply current filter
+            filterTable(currentFilter);
+            
+            // Update statistics
+            updateStatistics();
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up filter buttons
+            document.querySelectorAll('.filter-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const status = this.getAttribute('data-status');
+                    filterTable(status);
+                });
+            });
+            
+            // Set up sort buttons
+            document.querySelectorAll('.sort-button').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const field = this.getAttribute('data-sort') || 
+                                 this.parentElement.getAttribute('data-sort');
+                    if (field) {
+                        sortTable(field);
+                    }
+                });
+            });
+            
+            // Set up search input
+            document.getElementById('searchInput').addEventListener('input', function() {
+                searchTable(this.value);
+            });
+            
+            // Load data
+            fetch('/applied-jobs')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(jobs => {
+                    jobsData = jobs;
+                    refreshTable();
+                    console.log('Loaded data for', jobs.length, 'jobs');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('jobsBody').innerHTML = 
+                        '<tr><td colspan="9" style="text-align: center; padding: 20px;">Error loading data. Please refresh the page or check server connection.</td></tr>';
+                    document.getElementById('statsContainer').innerHTML = 'Error loading statistics';
+                    showNotification('Failed to load job data. Please check if the server is running.', 'error');
+                });
+        });
+    </script>
+</body>
+</html>
