@@ -1,0 +1,131 @@
+{
+  "personal_info": {
+    "first_name": "Simon",
+    "last_name": "Gyimah",
+    "email": "simon.gyimah2@gmail.com",
+    "phone": "+13156030026",
+    "location": "Potsdam, NY",
+    "linkedin": "https://www.linkedin.com/in/skgyimah/"
+  },
+  "education": [
+    {
+      "school": "Clarkson University",
+      "location": "Potsdam, NY",
+      "degree": "Master of Science",
+      "field": "Applied Data Science",
+      "dates": "Expected Dec 2025"
+    },
+    {
+      "school": "University of Cape Coast",
+      "location": "Cape Coast, Ghana",
+      "degree": "Bachelor of Science",
+      "field": "Biological Science",
+      "dates": "May 2012"
+    }
+  ],
+  "work_experience": [
+    {
+      "company": "Fidelity Bank",
+      "location": "Accra, Ghana",
+      "title": "Data Visualisation Expert",
+      "dates": "Jan 2023 - Dec 2023",
+      "bullet_points": [
+        "Revamped sales and marketing teams' strategies to produce compelling visualizations for products and services, resulting in a 30% increase in customer engagement.",
+        "Executed training sessions on design principles and software tools for the sales and marketing teams, leading to a 40% improvement in the quality of visual content produced.",
+        "Collaborated with cross-functional teams to create interactive presentations showcasing product features, contributing to a 20% increase in sales conversions.",
+        "Designed dashboards using Tableau to monitor key performance indicators, enabling real-time decision making for executives."
+      ]
+    },
+    {
+      "company": "Ministry of Tourism and Culture",
+      "location": "Accra, Ghana",
+      "title": "Data Analyst",
+      "dates": "Mar 2021 - Dec 2022",
+      "bullet_points": [
+        "Analyzed market research data to identify key trends and customer preferences, leading to a 15% increase in customer satisfaction metrics.",
+        "Directed management in implementing product improvements based on market research insights, resulting in a 10% increase in repeat purchases.",
+        "Recommended strategic initiatives to enhance services based on market research findings, leading to a 20% increase in overall revenue.",
+        "Developed Python scripts to automate data collection and cleaning processes, reducing manual workload by 25%."
+      ]
+    },
+    {
+      "company": "Ghana Education Service",
+      "location": "Accra, Ghana",
+      "title": "Data Analyst",
+      "dates": "Aug 2018 - Mar 2021",
+      "bullet_points": [
+        "Analyzed survey data from 5000+ students to identify best teaching techniques, resulting in a 15% increase in grades and a 20% boost in student confidence levels.",
+        "Collaborated with school management teams to implement personalized learning strategies, leading to a 10% improvement in student skills across all subjects.",
+        "Utilized statistical analysis to determine correlations between specific teaching methods and grade improvements, guiding the implementation of targeted interventions that resulted in a 30% increase in overall academic performance.",
+        "Developed predictive models using R to forecast student performance based on various factors, achieving 85% accuracy in identifying at-risk students."
+      ]
+    },
+    {
+      "company": "Sankofa Analytics",
+      "location": "Accra, Ghana",
+      "title": "Enterprise Data Analytics Platform Leadership",
+      "dates": "Jan 2023 - Dec 2023",
+      "bullet_points": [
+        "Spearheaded the development of a comprehensive data analytics platform, resulting in a 40% increase in data-driven decision-making efficiency across the organization and impacting over 1,500 employees.",
+        "Facilitated collaboration among 10+ data analysts, software engineers, and business stakeholders to gather project requirements, aligning goals that led to a successful completion rate of 95% within the designated timelines.",
+        "Established detailed project timelines and conducted bi-weekly progress reviews that ensured on-time delivery of key milestones for a $2M initiative; effectively resolved conflicts which decreased project delays by 30%."
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "title": "Airport Customer Segmentation & Leakage Studies",
+      "location": "Ogdensburg, NY",
+      "dates": "Jan 2025 - May 2025",
+      "description": "Directed a team of 4 students in conducting comprehensive market research for the Ogdensburg Airport Authority, resulting in actionable insights that improved customer engagement by 35% within a 6-month period.",
+      "bullet_points": [
+        "Coordinated and analyzed data on travel patterns from over 1,000 regional residents, which identified key demographics and potential growth segments, contributing to a strategic plan projected to increase passenger traffic by 20% annually.",
+        "Developed and implemented a detailed leakage analysis framework that identified $150K in potential revenue loss; facilitated presentations to stakeholders that secured $75K in additional funding for targeted marketing initiatives."
+      ],
+      "technologies": "Python, R, Tableau, Machine Learning, Predictive Modeling"
+    },
+    {
+      "title": "Bioinformatics Sequence Analysis Tool",
+      "dates": "Aug 2024 - Nov 2024",
+      "description": "Developed a comprehensive sequence analysis tool that integrated multiple bioinformatics algorithms to analyze genomic data, specifically designed for researchers studying genetic variations in plant species.",
+      "bullet_points": [
+        "Implemented statistical methods to identify significant patterns in genetic sequences, achieving 92% accuracy in detecting functionally relevant mutations.",
+        "Created an interactive visualization dashboard that reduced analysis time by 40% for research teams."
+      ],
+      "technologies": "Python, BioPython, R, Next Generation Sequencing, Statistical Analysis"
+    },
+    {
+      "title": "Predictive Healthcare Analytics System",
+      "dates": "Mar 2024 - Jul 2024",
+      "description": "Designed and deployed a machine learning-based predictive analytics system for early disease detection using anonymized patient data from regional healthcare providers.",
+      "bullet_points": [
+        "Built ensemble models combining random forests, gradient boosting, and neural networks to achieve 87% accuracy in predicting high-risk patients.",
+        "Integrated data from multiple sources including electronic health records, laboratory results, and demographic information using custom ETL pipelines."
+      ],
+      "technologies": "Python, TensorFlow, SQL, Data Mining, Machine Learning"
+    }
+  ],
+  "skills": [
+    "Tableau",
+    "R",
+    "Python",
+    "Data Mining",
+    "Machine Learning",
+    "Predictive Modelling",
+    "Next Generation Sequencing",
+    "SQL",
+    "Statistical Analysis",
+    "Data Visualization",
+    "Dashboard Design",
+    "ETL Processes",
+    "Excel",
+    "Power BI",
+    "Data Storytelling",
+    "Bioinformatics",
+    "Genomic Analysis",
+    "Project Management",
+    "Cross-functional Leadership",
+    "Market Research",
+    "A/B Testing"
+  ]
+}

@@ -7,9 +7,7 @@ logs
 
 old
 
-secrets.py
-config/personals.py
+
 .venv
 apikeys.py
 utils
-data/resume_data.json
